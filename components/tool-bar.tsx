@@ -9,9 +9,11 @@ const animConfig = {
     reduceMotion: ReduceMotion.System,
 }
 
-export default function Toolbar({toolbarToggle, addRecord}: {toolbarToggle: boolean, addRecord: Function}){
+export default function Toolbar({toolbarToggle, addRecord, editCardTitle}: {toolbarToggle: boolean, addRecord: Function, editCardTitle: Function}){
   const [modalState, setModalState] = React.useState(false)
   const [todoText, setTodoText] = React.useState("")
+  const [titleModalState, setTitleModalState] = React.useState(false)
+  const [cardTitle, setCardTitle] = React.useState("")
   const height = useSharedValue(0)
   const padding = useSharedValue(0)
 
@@ -32,18 +34,43 @@ export default function Toolbar({toolbarToggle, addRecord}: {toolbarToggle: bool
     setTodoText('')
   }
 
+  const changeTitle = () => {
+    if(!cardTitle){return}
+    editCardTitle(cardTitle)
+    setTitleModalState(false)
+    setCardTitle('')
+  }
+
   return(
     <>
     <Animated.View style={[styles.toolbar, {height}]}>
       <TouchableOpacity activeOpacity={0.7} style={styles.toolbarButton} onPress={()=>setModalState(!modalState)}>
         <Image source={require("../assets/addIco.png")}/>
       </TouchableOpacity>
-      <TouchableOpacity activeOpacity={0.7} style={styles.toolbarButton}>
+      <TouchableOpacity activeOpacity={0.7} style={styles.toolbarButton} onPress={()=>setTitleModalState(!titleModalState)}>
         <Image source={require("../assets/edit.png")}/>
       </TouchableOpacity>
     </Animated.View>
 
 
+    <Modal
+        animationType='fade'
+        transparent={true}
+        visible={titleModalState}
+        onRequestClose={()=>setTitleModalState(!titleModalState)}>
+        <View style={styles.modal}>
+          <View style={styles.modalWindow}>
+            <Text style={styles.modalTitle}>Enter new title</Text>
+            <TextInput style={styles.modalInput} value={cardTitle} onChangeText={setCardTitle}/>
+            <View style={styles.modalButtons}>
+              <Pressable style={[styles.modalButton, styles.leftModalButton]} onPress={changeTitle}><Text style={styles.leftModalButton}>Change title</Text></Pressable>
+              <Pressable style={[styles.modalButton, styles.rightModalButton]} onPress={()=>setTitleModalState(!titleModalState)}><Text style={styles.rightModalButton}>Cancel</Text></Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      
     <Modal
         animationType='fade'
         transparent={true}

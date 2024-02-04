@@ -92,7 +92,25 @@ const toggleTodoDone = async(cardId: number, todoId: number) => {
   return result
 }
 
+const editTodoText = async(cardId: number, todoId: number, text: string) => {
+  const data = await getData('cards')
+  const result = data.map((card: any) => {
+    if(card.id != cardId){return card}
+    const filtered = card.todos.map((todo: todosData) => todoId != todo.id ? todo : {...todo, text: text})
+    return {...card, todos: filtered}
+  })
+  setData('cards', result)
+  return result
+}
+
+const editCardTitle = async(cardId: number, title: string) => {
+  const data = await getData('cards')
+  const result = data.map((card: any) => card.id != cardId ? card : {...card, title})
+  setData('cards', result)
+  return result
+}
+
 //{...item, todos: [newTodo, ...item.todos]}
-const storage = {setData, getData, getAllKeys, getAllData, remove, searchById, removeCard, addTodo, removeTodo, toggleTodoDone}
+const storage = {setData, getData, getAllKeys, getAllData, remove, searchById, removeCard, addTodo, removeTodo, toggleTodoDone, editTodoText, editCardTitle}
 
 export default storage

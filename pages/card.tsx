@@ -43,15 +43,27 @@ export default function Card({route}: any){
     fetchCardData()
   }
 
+  const editText = async(todoId: number, text: string) => {
+    const result = await storage.editTodoText(cardId, todoId, text)
+    setCards(result)
+    fetchCardData()
+  }
+
+  const editCardTitle = async(title: string) => {
+    const result = await storage.editCardTitle(cardId, title)
+    setCards(result)
+    fetchCardData()
+  }
+
 
   return(
     <>
     <TopBar title={cardData?.title} setToolbarToggle={setToolbarToggle} toolbarToggle={toolbarToggle}/>
-    <Toolbar toolbarToggle={toolbarToggle} addRecord={addRecord}/>
+    <Toolbar toolbarToggle={toolbarToggle} addRecord={addRecord} editCardTitle={editCardTitle}/>
     <View style={styles.padding}>
       <FlatList 
         data={cardData.todos}
-        renderItem={({item}) => <Todo todo={item} removeRecord={removeRecord} todoToggle={todoToggle}/>}
+        renderItem={({item}) => <Todo todo={item} removeRecord={removeRecord} editText={editText} todoToggle={todoToggle}/>}
         keyExtractor={item => item.id}/>
     </View>
     </>
