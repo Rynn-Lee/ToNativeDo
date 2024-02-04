@@ -1,16 +1,34 @@
-import { StatusBar, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import { useNavigation, useNavigationState, useRoute } from "@react-navigation/native";
 import storage from "../../lib/storage";
+import * as React from 'react'
 
-const topPadding = StatusBar.currentHeight || 20;
-export default function TopBar(){
+export default function TopBar({title}: {title?: string}){
+  const [isHome, setIsHome] = React.useState(true)
+  const [subbedTitle, setSubbedTitle] = React.useState(title?.substring(0,38))
+  const route = useRoute()
+  const navigation = useNavigation()
 
-  const logData = async() => {
-    console.log(await storage.remove())
-  }
+  React.useEffect(()=>{
+    if(route.name != "Home"){
+      setIsHome(false)
+    }
+  }, [route.name])
 
   return(
     <View style={styles.topbar}>
-      <Text style={styles.topbarText} onPress={logData}>To Native Do ✨ Everrynn</Text>
+      {!isHome
+        ? <Pressable style={styles.backButton} onPress={()=>navigation.goBack()}>
+            <Text style={styles.backButtonText}>Back</Text>
+          </Pressable>
+        : <></>}
+      <Text style={styles.topbarText}>
+        {title 
+          ? title.length > 38
+            ? subbedTitle + "..."
+            : title
+          : "To Native Do ✨ Everrynn"}
+      </Text>
     </View>
   )
 }
@@ -18,16 +36,32 @@ export default function TopBar(){
 
 const styles = StyleSheet.create({
   topbar: {
-    paddingBottom: 12,
-    paddingLeft: 20,
-    paddingTop: topPadding+2,
+    paddingBottom: 14,
+    paddingLeft: 14,
+    paddingTop: 14,
     display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: "flex-start",
+    alignItems: "center",
     backgroundColor: "#fff",
+    flexDirection: "row"
   },
   topbarText: {
     color: "#808080",
+    height: 25,
+
     fontSize: 18
+  },
+  backButton: {
+    backgroundColor: "coral",
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 16,
+    paddingRight: 16,
+    marginRight: 10,
+    borderRadius: 8
+  },
+  backButtonText: {
+    color: "#ffffff",
+    fontWeight: "500"
   }
 })

@@ -39,6 +39,12 @@ const getAllData = async() => {
   }
 }
 
+const searchById = async(storage: string, id: number) => {
+  const data = await getData(storage)
+  const result = data.filter((item: any) => item.id == id)
+  return result
+}
+
 const remove = async() => {
   try{
     await AsyncStorage.clear()
@@ -47,6 +53,6 @@ const remove = async() => {
   }
 }
 
-const storage = {setData, getData, getAllKeys, getAllData, remove}
+const storage = {setData, getData, getAllKeys, getAllData, remove, searchById}
 
 export default storage

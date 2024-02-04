@@ -1,14 +1,13 @@
-import {Button, Modal, Pressable, StyleSheet, Text, TextInput, View, ScrollView, Dimensions, TouchableOpacity} from 'react-native';
+import {Modal, Pressable, StyleSheet, Text, TextInput, View, ScrollView, Dimensions, TouchableOpacity} from 'react-native';
 import { useState, useEffect } from 'react';
 import storage from '../lib/storage';
 import Card from '../components/card/card';
 import { cardData } from '../types/card';
+import TopBar from '../components/top-bar/top-bar';
 
-let deviceH = Dimensions.get('screen').height;
-let windowH = Dimensions.get('window').height;
-let bottomNavBarH = deviceH - windowH;
+let bottomNavBarH = Dimensions.get('screen').height - Dimensions.get('window').height;
 
-export default function Home(){
+export default function Home({navigation}: any){
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [cardTitle, setCardTitle] = useState<string>("")
   const [cardList, setCardList] = useState<cardData[]>()
@@ -24,6 +23,7 @@ export default function Home(){
   }
 
   const saveTodo = async() => {
+    if(!cardTitle){return}
     const prevData = await storage.getData('cards');
     const newCard = {
       id: Date.now(),
@@ -34,9 +34,14 @@ export default function Home(){
     setCardList([newCard, ...prevData])
     setCardTitle("")
     setModalVisible(!modalVisible)
+    navigation.push('Card', {
+      cardId: newCard.id
+    })
   }
 
   return(
+    <>
+    <TopBar/>
     <View style={styles.padding}>
       <TouchableOpacity
         onPress={()=>setModalVisible(true)}
@@ -61,9 +66,10 @@ export default function Home(){
         </View>
       </Modal>
       <ScrollView style={styles.cards}>
-        {cardList?.map((card: cardData) => <Card key={card.id} card={card}/>).sort((a,b)=>b.props.card.id - a.props.card.id)}
+        {cardList?.map((card: cardData) => <Card key={card.id} card={card} />).sort((a,b)=>b.props.card.id - a.props.card.id)}
       </ScrollView>
     </View>
+    </>
   )
 }
 
@@ -82,7 +88,7 @@ const styles = StyleSheet.create({
   },
   cards: {
     marginTop: 10,
-    marginBottom: bottomNavBarH-10
+    marginBottom: bottomNavBarH+25
   },
   padding: {
     padding: 10
@@ -105,7 +111,8 @@ const styles = StyleSheet.create({
     padding: 20
   },
   modalTitle: {
-    fontSize: 18
+    fontSize: 18,
+    color: "#707070",
   },
   modalButtons: {
     display: "flex",
@@ -132,6 +139,7 @@ const styles = StyleSheet.create({
   },
   modalInput: {
     borderBottomColor: "coral",
+    color: "#101010",
     padding: 5,
     borderBottomWidth: 1,
     marginBottom: 10,
