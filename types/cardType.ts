@@ -1,6 +1,7 @@
 export type todosData = {
   id: number,
-  text: string
+  text: string,
+  done: boolean
 }
 
 export type cardData = {

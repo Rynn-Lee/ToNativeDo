@@ -1,28 +1,29 @@
 import {Modal, Pressable, StyleSheet, Text, TextInput, View, ScrollView, Dimensions, TouchableOpacity} from 'react-native';
 import { useState, useEffect } from 'react';
 import storage from '../lib/storage';
-import Card from '../components/card/card';
-import { cardData } from '../types/card';
-import TopBar from '../components/top-bar/top-bar';
+import Card from '../components/listed-card';
+import { cardData } from '../types/cardType';
+import TopBar from '../components/top-bar';
+import { useCardStore } from '../stores/cardStore';
 
 let bottomNavBarH = Dimensions.get('screen').height - Dimensions.get('window').height;
 
-export default function Home({navigation}: any){
+export default function Home({navigation, route}: any){
   const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const {cards, setCards}: any = useCardStore()
   const [cardTitle, setCardTitle] = useState<string>("")
-  const [cardList, setCardList] = useState<cardData[]>()
 
   useEffect(()=>{
-    if(cardList?.length){return}
-    fetchTodos()
+    fetchCards()
   }, [])
 
-  const fetchTodos = async() => {
+  const fetchCards = async() => {
     const result = await storage.getData('cards')
-    setCardList(result)
+    console.log("RESULT CARDS", result)
+    setCards(result)
   }
 
-  const saveTodo = async() => {
+  const saveCard = async() => {
     if(!cardTitle){return}
     const prevData = await storage.getData('cards');
     const newCard = {
@@ -31,12 +32,13 @@ export default function Home({navigation}: any){
       todos: []
     }
     await storage.setData("cards", [...prevData, newCard])
-    setCardList([newCard, ...prevData])
+    setCards([newCard, ...prevData])
     setCardTitle("")
     setModalVisible(!modalVisible)
-    navigation.push('Card', {
-      cardId: newCard.id
-    })
+  }
+
+  const deleteCard = async(id: number) => {
+    setCards(await storage.removeCard(id))
   }
 
   return(
@@ -59,14 +61,14 @@ export default function Home({navigation}: any){
             <Text style={styles.modalTitle}>What would be the title?</Text>
             <TextInput style={styles.modalInput} value={cardTitle} onChangeText={setCardTitle}/>
             <View style={styles.modalButtons}>
-              <Pressable style={[styles.modalButton, styles.leftModalButton]} onPress={saveTodo}><Text style={styles.leftModalButton}>Add New</Text></Pressable>
+              <Pressable style={[styles.modalButton, styles.leftModalButton]} onPress={saveCard}><Text style={styles.leftModalButton}>Add New</Text></Pressable>
               <Pressable style={[styles.modalButton, styles.rightModalButton]} onPress={()=>setModalVisible(!modalVisible)}><Text style={styles.rightModalButton}>Cancel</Text></Pressable>
             </View>
           </View>
         </View>
       </Modal>
       <ScrollView style={styles.cards}>
-        {cardList?.map((card: cardData) => <Card key={card.id} card={card} />).sort((a,b)=>b.props.card.id - a.props.card.id)}
+        {cards?.map((card: cardData) => <Card key={card.id} card={card} deleteCard={deleteCard}/>).sort((a,b)=>b.props.card.id - a.props.card.id)}
       </ScrollView>
     </View>
     </>
