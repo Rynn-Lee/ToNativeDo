@@ -44,7 +44,7 @@ const getAllData = async() => {
 const searchById = async(storage: string, id: number) => {
   const data = await getData(storage)
   const result = data.filter((item: any) => item.id == id)
-  return result
+  return result[0]
 }
 
 const remove = async() => {

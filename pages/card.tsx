@@ -1,4 +1,4 @@
-import {StyleSheet, View, ScrollView, FlatList} from 'react-native';
+import {StyleSheet, View, FlatList} from 'react-native';
 import TopBar from '../components/top-bar';
 import Toolbar from '../components/tool-bar';
 import React from 'react';
@@ -7,11 +7,9 @@ import { cardData, todosData } from '../types/cardType';
 import { useCardStore } from '../stores/cardStore';
 import Todo from '../components/todo';
 
-
-
 export default function Card({route}: any){
   const [cardData, setCardData] = React.useState<cardData>({})
-  const {cards, setCards}: any = useCardStore()
+  const {setCards}: any = useCardStore()
   const [toolbarToggle, setToolbarToggle] = React.useState(false)
   const { cardId } = route.params;
 
@@ -22,7 +20,7 @@ export default function Card({route}: any){
 
   const fetchCardData = async() => {
     const result = await storage.searchById('cards', cardId)
-    setCardData(result[0])
+    setCardData(result)
   }
   
   const addRecord = async(todo: todosData) => {
@@ -31,30 +29,15 @@ export default function Card({route}: any){
     setCards(result)
   }
 
-  const removeRecord = async(todoId: number) => {
-    const result = await storage.removeTodo(cardId, todoId)
+  const removeRecord = async(todoId: number) => updateCards(await storage.removeTodo(cardId, todoId))
+  const todoToggle = async(todoId: number) => updateCards(await storage.toggleTodoDone(cardId, todoId))
+  const editText = async(todoId: number, text: string) => updateCards(await storage.editTodoText(cardId, todoId, text))
+  const editCardTitle = async(title: string) => updateCards(await storage.editCardTitle(cardId, title))
+
+  const updateCards = (result: any) => {
     setCards(result)
     fetchCardData()
   }
-
-  const todoToggle = async(todoId: number) => {
-    const result = await storage.toggleTodoDone(cardId, todoId)
-    setCards(result)
-    fetchCardData()
-  }
-
-  const editText = async(todoId: number, text: string) => {
-    const result = await storage.editTodoText(cardId, todoId, text)
-    setCards(result)
-    fetchCardData()
-  }
-
-  const editCardTitle = async(title: string) => {
-    const result = await storage.editCardTitle(cardId, title)
-    setCards(result)
-    fetchCardData()
-  }
-
 
   return(
     <>
