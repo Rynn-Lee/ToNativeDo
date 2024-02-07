@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable, TouchableOpacity, Image } from "react-native";
-import { useNavigation, useNavigationState, useRoute } from "@react-navigation/native";
+import { StyleSheet, Text, View, Pressable, Image, Dimensions } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Animated, {useSharedValue, withTiming, Easing, ReduceMotion} from "react-native-reanimated";
 import * as React from 'react'
 
@@ -9,9 +9,10 @@ const animConfig = {
   reduceMotion: ReduceMotion.System,
 }
 
+const maxWidth = Dimensions.get('window').width
+
 export default function TopBar({title, setToolbarToggle, toolbarToggle}: {title?: string, setToolbarToggle?: Function, toolbarToggle?: boolean}){
   const [isHome, setIsHome] = React.useState(true)
-  const subbedTitle = title?.substring(0,30)
   const route = useRoute()
   const navigation = useNavigation()
   const rotation = useSharedValue("0rad")
@@ -30,18 +31,15 @@ export default function TopBar({title, setToolbarToggle, toolbarToggle}: {title?
 
   return(
     <View style={styles.topbar}>
-      <View style={styles.subbar}>
-        {!isHome
-          ? <Pressable style={styles.backButton} onPress={()=>navigation.goBack()}>
-              <Text style={styles.backButtonText}>Back</Text>
-            </Pressable>
-          : <></>}
-        <Text style={styles.topbarText}>
-          {title 
-            ? title.length > 38
-              ? subbedTitle + "..."
-              : title
-            : "To Native Do ✨ Everrynn"}
+      {!isHome
+        ? <Pressable style={styles.backButton} onPress={()=>navigation.goBack()}>
+            <Text style={styles.backButtonText}>Back</Text>
+          </Pressable>
+        : <></>}
+      <View style={styles.topbarTextView}>
+        <Text style={styles.topbarText} numberOfLines={1} ellipsizeMode="tail" allowFontScaling={false}>
+          {title ? title
+                : "To Native Do ✨ Everrynn"}
         </Text>
       </View>
       {setToolbarToggle 
@@ -59,6 +57,7 @@ export default function TopBar({title, setToolbarToggle, toolbarToggle}: {title?
 
 const styles = StyleSheet.create({
   topbar: {
+    maxWidth: maxWidth,
     paddingBottom: 14,
     paddingLeft: 14,
     paddingTop: 14,
@@ -72,32 +71,30 @@ const styles = StyleSheet.create({
     color: "#ffffff"
   },
   hideToolbar: {
-    position: "absolute",
     backgroundColor: "coral",
     borderRadius: 10,
     padding: 6,
     right: 10
   },
-  subbar: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center"
+  topbarTextView: {
+    alignItems: "flex-start",
+    justifyContent: "center",
+    paddingRight: 10,
+    width: "70%"
   },
   topbarText: {
+    fontSize: 16,
     color: "#808080",
-    height: 25,
-
-    fontSize: 18
   },
   backButton: {
+    alignItems: "center",
     backgroundColor: "coral",
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 16,
     paddingRight: 16,
     marginRight: 10,
-    borderRadius: 8
+    borderRadius: 8,
   },
   backButtonText: {
     color: "#ffffff",

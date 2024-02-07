@@ -8,7 +8,6 @@ import { useNavigation } from "@react-navigation/native";
 export default function Card({card, deleteCard}: {card: cardData, deleteCard: Function}){
   const [deleteState, setDeleteState] = useState(false)
   const navigation: any = useNavigation()
-  const shortenTitle = card?.title?.substring(0,26)
   
   const clickOnCard = () => {
     if(deleteState){
@@ -23,7 +22,7 @@ export default function Card({card, deleteCard}: {card: cardData, deleteCard: Fu
   return(
     <TouchableOpacity style={[styles.card, deleteState && styles.delete]} activeOpacity={0.6} onPress={clickOnCard} onLongPress={()=>setDeleteState(true)}>
       <View style={styles.top}>
-        <Text style={styles.title}>{card?.title?.length > 30 ? `${shortenTitle}...` : card.title}</Text>
+        <Text style={styles.title} ellipsizeMode="tail" numberOfLines={1}>{card.title}</Text>
         <Text style={styles.date}>{calculateDate(card?.id)}</Text>
       </View>
       <View style={styles.bottom}>
@@ -66,7 +65,7 @@ const styles = StyleSheet.create({
     color: "#202020",
     fontSize: 18,
     fontWeight: "bold",
-    width: "70%",
+    width: "75%",
     overflow: "hidden",
     height: 26
   },

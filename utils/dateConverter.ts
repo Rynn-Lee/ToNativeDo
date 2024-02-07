@@ -2,7 +2,7 @@ const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
 
 export default function calculateDate(timestamp: number){
   const date = new Date(timestamp);
-  return `${date.getDate()}-${monthsShort[date.getMonth()]}-${date.getFullYear()} ${getHours(date)}:${getMinutes(date)}:${getSeconds(date)}`
+  return `${date.getDate()}-${monthsShort[date.getMonth()]}-${date.getFullYear()}`
 }
 
 
